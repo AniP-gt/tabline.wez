@@ -107,6 +107,8 @@ function M.extract_components(components_opts, attributes, object, format)
       end
     elseif type(v) == 'function' then
       local fn_result = v(object)
+      local wez = require('wezterm')
+      wez.log_info('FUNC_COMPONENT type=' .. type(fn_result) .. ' #=' .. tostring(type(fn_result) == 'table' and #fn_result or 'N/A'))
       if type(fn_result) == 'table' then
         -- FormatItem array: insert directly so color attributes take effect
         M.insert_elements(components, fn_result)
