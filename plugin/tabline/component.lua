@@ -172,21 +172,7 @@ end
 function M.set_status(window)
   create_attributes(window)
   create_sections(window)
-  local left = left_section()
-  -- DEBUG: dump first 10 items of left_section result
-  for i = 1, math.min(15, #left) do
-    local item = left[i]
-    if type(item) == 'table' then
-      local parts = {}
-      for k, v in pairs(item) do
-        parts[#parts + 1] = k .. '=' .. wezterm.json_encode(v)
-      end
-      wezterm.log_info('LEFT[' .. i .. '] ' .. table.concat(parts, ', '))
-    elseif type(item) == 'string' then
-      wezterm.log_info('LEFT[' .. i .. '] "' .. item .. '"')
-    end
-  end
-  window:set_left_status(wezterm.format(left))
+  window:set_left_status(wezterm.format(left_section()))
   window:set_right_status(wezterm.format(right_section()))
 end
 
