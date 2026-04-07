@@ -78,4 +78,24 @@ function M.is_remote_tab(tab)
   return false
 end
 
+--- Check if any pane in the given workspace has a remote connection.
+--- Uses wezterm.mux API to enumerate windows/tabs/panes.
+--- @param workspace_name string
+--- @return boolean
+function M.is_remote_workspace(workspace_name)
+  local wezterm = require('wezterm')
+  for _, mux_win in ipairs(wezterm.mux.all_windows()) do
+    if mux_win:get_workspace() == workspace_name then
+      for _, tab in ipairs(mux_win:tabs()) do
+        for _, pane_info in ipairs(tab:panes_with_info()) do
+          if is_remote_pane(pane_info) then
+            return true
+          end
+        end
+      end
+    end
+  end
+  return false
+end
+
 return M

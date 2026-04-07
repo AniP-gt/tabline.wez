@@ -3,6 +3,7 @@ local util = require('tabline.util')
 local config = require('tabline.config')
 local extension = require('tabline.extension')
 local mode = require('tabline.components.window.mode')
+local remote = require('tabline.remote')
 
 local M = {}
 
@@ -28,14 +29,26 @@ local function create_attributes(window)
       colors = util.deep_extend(util.deep_copy(colors), ext.theme)
     end
   end
+
+  -- Check if active workspace has any remote panes
+  local active_ws = window:active_workspace()
+  local ws_has_remote = remote.is_remote_workspace(active_ws)
+  local remote_colors = config.theme.tab
+  local b_fg = colors.b.fg
+  local b_bg = colors.b.bg
+  if ws_has_remote and remote_colors and remote_colors.remote_active then
+    b_fg = remote_colors.remote_active.fg
+    b_bg = remote_colors.remote_active.bg
+  end
+
   attributes_a = {
     { Foreground = { Color = colors.a.fg } },
     { Background = { Color = colors.a.bg } },
     { Attribute = { Intensity = 'Bold' } },
   }
   attributes_b = {
-    { Foreground = { Color = colors.b.fg } },
-    { Background = { Color = colors.b.bg } },
+    { Foreground = { Color = b_fg } },
+    { Background = { Color = b_bg } },
     { Attribute = { Intensity = 'Normal' } },
   }
   attributes_c = {
@@ -58,10 +71,10 @@ local function create_attributes(window)
   }
   section_seperator_attributes_a = {
     { Foreground = { Color = colors.a.bg } },
-    { Background = { Color = colors.b.bg } },
+    { Background = { Color = b_bg } },
   }
   section_seperator_attributes_b = {
-    { Foreground = { Color = colors.b.bg } },
+    { Foreground = { Color = b_bg } },
     { Background = { Color = colors.c.bg } },
   }
   section_seperator_attributes_c = {
