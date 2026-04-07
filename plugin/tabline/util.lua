@@ -106,7 +106,13 @@ function M.extract_components(components_opts, attributes, object, format)
         end
       end
     elseif type(v) == 'function' then
-      table.insert(components, { Text = v(object) .. '' })
+      local fn_result = v(object)
+      if type(fn_result) == 'table' then
+        -- FormatItem array: insert directly so color attributes take effect
+        M.insert_elements(components, fn_result)
+      else
+        table.insert(components, { Text = fn_result .. '' })
+      end
     elseif type(v) == 'table' then
       table.insert(components, v)
     end
