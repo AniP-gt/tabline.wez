@@ -27,6 +27,8 @@ function plugin_package_path()
     string.format("https://github.com/michaelbrusegard/%s/", basename),
     string.format("http://github.com/michaelbrusegard/%s", basename),
     string.format("http://github.com/michaelbrusegard/%s/", basename),
+    string.format("https://github.com/AniP-gt/%s", basename),
+    string.format("https://github.com/AniP-gt/%s/", basename),
     basename,
   }
 
