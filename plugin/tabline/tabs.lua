@@ -1,6 +1,7 @@
 local config = require('tabline.config')
 local util = require('tabline.util')
 local extension = require('tabline.extension')
+local remote = require('tabline.remote')
 
 local M = {}
 
@@ -10,29 +11,57 @@ local active_attributes, inactive_attributes, active_separator_attributes, inact
   {}, {}, {}, {}
 local tab_active, tab_inactive = {}, {}
 
-local function create_attributes(hover)
+local function create_attributes(tab, hover)
   local colors = config.theme.tab
   for _, ext in pairs(extension.extensions) do
     if ext.theme and ext.theme.tab then
       colors = util.deep_extend(util.deep_copy(colors), ext.theme.tab)
     end
   end
-  active_attributes = {
-    { Foreground = { Color = colors.active.fg } },
-    { Background = { Color = colors.active.bg } },
-  }
-  inactive_attributes = {
-    { Foreground = { Color = hover and colors.inactive_hover.fg or colors.inactive.fg } },
-    { Background = { Color = hover and colors.inactive_hover.bg or colors.inactive.bg } },
-  }
-  active_separator_attributes = {
-    { Foreground = { Color = colors.active.bg } },
-    { Background = { Color = colors.inactive.bg } },
-  }
-  inactive_separator_attributes = {
-    { Foreground = { Color = hover and colors.inactive_hover.bg or colors.inactive.bg } },
-    { Background = { Color = colors.inactive.bg } },
-  }
+
+  local is_remote = remote.is_remote_tab(tab)
+  -- Fall back to normal colors if remote keys are missing
+  if is_remote and not colors.remote_active then
+    is_remote = false
+  end
+
+  if is_remote then
+    active_attributes = {
+      { Foreground = { Color = colors.remote_active.fg } },
+      { Background = { Color = colors.remote_active.bg } },
+    }
+    inactive_attributes = {
+      { Foreground = { Color = hover and colors.remote_inactive_hover.fg or colors.remote_inactive.fg } },
+      { Background = { Color = hover and colors.remote_inactive_hover.bg or colors.remote_inactive.bg } },
+    }
+    local active_bg = colors.remote_active.bg
+    local inactive_bg = hover and colors.remote_inactive_hover.bg or colors.remote_inactive.bg
+    active_separator_attributes = {
+      { Foreground = { Color = active_bg } },
+      { Background = { Color = colors.inactive.bg } },
+    }
+    inactive_separator_attributes = {
+      { Foreground = { Color = inactive_bg } },
+      { Background = { Color = colors.inactive.bg } },
+    }
+  else
+    active_attributes = {
+      { Foreground = { Color = colors.active.fg } },
+      { Background = { Color = colors.active.bg } },
+    }
+    inactive_attributes = {
+      { Foreground = { Color = hover and colors.inactive_hover.fg or colors.inactive.fg } },
+      { Background = { Color = hover and colors.inactive_hover.bg or colors.inactive.bg } },
+    }
+    active_separator_attributes = {
+      { Foreground = { Color = colors.active.bg } },
+      { Background = { Color = colors.inactive.bg } },
+    }
+    inactive_separator_attributes = {
+      { Foreground = { Color = hover and colors.inactive_hover.bg or colors.inactive.bg } },
+      { Background = { Color = colors.inactive.bg } },
+    }
+  end
 end
 
 local function create_tab_content(tab)
@@ -71,7 +100,7 @@ M.set_title = function(tab, hover)
   if not config.opts.options.tabs_enabled then
     return
   end
-  create_attributes(hover)
+  create_attributes(tab, hover)
   create_tab_content(tab)
   return tabs(tab)
 end

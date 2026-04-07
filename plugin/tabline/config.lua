@@ -77,6 +77,9 @@ local function get_colors(theme)
       active = { fg = colors.ansi[5], bg = surface },
       inactive = { fg = colors.foreground, bg = background },
       inactive_hover = { fg = colors.ansi[6], bg = surface },
+      remote_active = { fg = colors.foreground, bg = colors.ansi[2] },
+      remote_inactive = { fg = colors.foreground, bg = colors.brights and colors.brights[2] or colors.ansi[2] },
+      remote_inactive_hover = { fg = colors.foreground, bg = colors.ansi[2] },
     },
     colors = colors,
   }
