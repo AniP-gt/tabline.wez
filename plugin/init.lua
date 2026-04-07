@@ -94,7 +94,12 @@ function M.setup(opts)
   require('tabline.config').set(opts)
 
   wezterm.on('update-status', function(window)
-    require('tabline.component').set_status(window)
+    local ok, err = pcall(function()
+      require('tabline.component').set_status(window)
+    end)
+    if not ok then
+      wezterm.log_error('tabline.component.set_status failed: ' .. tostring(err))
+    end
   end)
 
   wezterm.on('format-tab-title', function(tab, _, _, _, hover, _)
