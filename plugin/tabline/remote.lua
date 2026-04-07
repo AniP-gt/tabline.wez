@@ -88,17 +88,15 @@ function M.is_remote_workspace(workspace_name)
     if mux_win:get_workspace() == workspace_name then
       for _, tab in ipairs(mux_win:tabs()) do
         for _, pane_info in ipairs(tab:panes_with_info()) do
-          -- DEBUG: log pane_info keys to understand structure
-          local keys = {}
-          for k, _ in pairs(pane_info) do
-            table.insert(keys, k)
-          end
-          wezterm.log_info('WORKSPACE PANE keys: ' .. table.concat(keys, ', '))
-          wezterm.log_info('WORKSPACE PANE user_vars: ' .. tostring(pane_info.user_vars))
+          -- panes_with_info() does not have user_vars at top level;
+          -- use the live Pane object to get user_vars
           if pane_info.pane then
             local uv = pane_info.pane:get_user_vars()
-            wezterm.log_info('WORKSPACE PANE pane:get_user_vars(): ' .. wezterm.json_encode(uv))
+            if uv and (uv.WEZTERM_REMOTE == 'true' or uv.WEZTERM_REMOTE == '1') then
+              return true
+            end
           end
+          -- Also check other fields via is_remote_pane for non-user_vars detection
           if is_remote_pane(pane_info) then
             return true
           end
