@@ -106,7 +106,12 @@ function M.extract_components(components_opts, attributes, object, format)
         end
       end
     elseif type(v) == 'function' then
-      table.insert(components, { Text = v(object) .. '' })
+      local result = v(object)
+      if type(result) == 'table' then
+        M.insert_elements(components, result)
+      else
+        table.insert(components, { Text = result .. '' })
+      end
     elseif type(v) == 'table' then
       table.insert(components, v)
     end

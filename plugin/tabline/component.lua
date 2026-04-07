@@ -3,7 +3,6 @@ local util = require('tabline.util')
 local config = require('tabline.config')
 local extension = require('tabline.extension')
 local mode = require('tabline.components.window.mode')
-local remote = require('tabline.remote')
 
 local M = {}
 
@@ -30,34 +29,14 @@ local function create_attributes(window)
     end
   end
 
-  -- Check if active workspace has any remote panes
-  local wezterm_log = require('wezterm')
-  local active_ws_ok, active_ws = pcall(function() return window:active_workspace() end)
-  if not active_ws_ok then
-    wezterm_log.log_info('REMOTE: active_workspace() failed: ' .. tostring(active_ws))
-  end
-  local ws_ok, ws_has_remote = pcall(function() return remote.is_remote_workspace(active_ws) end)
-  if not ws_ok then
-    wezterm_log.log_info('REMOTE: is_remote_workspace() failed: ' .. tostring(ws_has_remote))
-    ws_has_remote = false
-  end
-  wezterm_log.log_info('REMOTE: ws=' .. tostring(active_ws) .. ' has_remote=' .. tostring(ws_has_remote))
-  local remote_colors = config.theme.tab
-  local b_fg = colors.b.fg
-  local b_bg = colors.b.bg
-  if ws_has_remote and remote_colors and remote_colors.remote_active then
-    b_fg = remote_colors.remote_active.fg
-    b_bg = remote_colors.remote_active.bg
-  end
-
   attributes_a = {
     { Foreground = { Color = colors.a.fg } },
     { Background = { Color = colors.a.bg } },
     { Attribute = { Intensity = 'Bold' } },
   }
   attributes_b = {
-    { Foreground = { Color = b_fg } },
-    { Background = { Color = b_bg } },
+    { Foreground = { Color = colors.b.fg } },
+    { Background = { Color = colors.b.bg } },
     { Attribute = { Intensity = 'Normal' } },
   }
   attributes_c = {
@@ -80,10 +59,10 @@ local function create_attributes(window)
   }
   section_seperator_attributes_a = {
     { Foreground = { Color = colors.a.bg } },
-    { Background = { Color = b_bg } },
+    { Background = { Color = colors.b.bg } },
   }
   section_seperator_attributes_b = {
-    { Foreground = { Color = b_bg } },
+    { Foreground = { Color = colors.b.bg } },
     { Background = { Color = colors.c.bg } },
   }
   section_seperator_attributes_c = {
