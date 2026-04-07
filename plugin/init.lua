@@ -98,11 +98,14 @@ function M.setup(opts)
   end)
 
   wezterm.on('format-tab-title', function(tab, _, _, _, hover, _)
-    -- DEBUG: log pane info to help diagnose remote detection
+    -- DEBUG: log pane info and remote detection result
+    local remote = require('tabline.remote')
+    local is_remote = remote.is_remote_tab(tab)
+    wezterm.log_info(string.format('TAB[%d] is_remote=%s', tab.tab_index, tostring(is_remote)))
     for i, pane in ipairs(tab.panes) do
       wezterm.log_info(string.format(
-        'TAB[%d] PANE[%d] process="%s" title="%s" domain="%s" user_vars=%s',
-        tab.tab_index, i,
+        '  PANE[%d] process="%s" title="%s" domain="%s" user_vars=%s',
+        i,
         tostring(pane.foreground_process_name or ''),
         tostring(pane.title or ''),
         tostring(pane.domain_name or ''),
