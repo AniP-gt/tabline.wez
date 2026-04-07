@@ -31,8 +31,17 @@ local function create_attributes(window)
   end
 
   -- Check if active workspace has any remote panes
-  local active_ws = window:active_workspace()
-  local ws_has_remote = remote.is_remote_workspace(active_ws)
+  local wezterm_log = require('wezterm')
+  local active_ws_ok, active_ws = pcall(function() return window:active_workspace() end)
+  if not active_ws_ok then
+    wezterm_log.log_info('REMOTE: active_workspace() failed: ' .. tostring(active_ws))
+  end
+  local ws_ok, ws_has_remote = pcall(function() return remote.is_remote_workspace(active_ws) end)
+  if not ws_ok then
+    wezterm_log.log_info('REMOTE: is_remote_workspace() failed: ' .. tostring(ws_has_remote))
+    ws_has_remote = false
+  end
+  wezterm_log.log_info('REMOTE: ws=' .. tostring(active_ws) .. ' has_remote=' .. tostring(ws_has_remote))
   local remote_colors = config.theme.tab
   local b_fg = colors.b.fg
   local b_bg = colors.b.bg
